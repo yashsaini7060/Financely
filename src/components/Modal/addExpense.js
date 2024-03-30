@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Modal, Form, Input, DatePicker } from "antd";
+import { Button, Modal, Form, Input, DatePicker, Select } from "antd";
 
 const AddExpense = ({
   isExpenseModalVisible,
@@ -30,7 +30,7 @@ const AddExpense = ({
           rules={[
             {
               required: true,
-              message: "Please enter the name of the transaction",
+              message: "Please enter the name of the transaction!",
             },
           ]}
         >
@@ -42,7 +42,7 @@ const AddExpense = ({
           label="Amount"
           name="amount"
           rules={[
-            { required: true, message: "Please enter the expense amount" },
+            { required: true, message: "Please enter the expense amount!" },
           ]}
         >
           <Input type="number" className="custome-input" />
@@ -53,11 +53,25 @@ const AddExpense = ({
           label="Date"
           name="date"
           rules={[
-            { required: true, message: "Please select the expense date" },
+            { required: true, message: "Please select the expense date!" },
           ]}
         >
           <DatePicker className="custome-input" format="DD-MM-YYYY" />
         </Form.Item>
+
+        <Form.Item
+            style={{ fontWeight: 600 }}
+            label="Tag"
+            name="tag"
+            rules={[{ required: true, message: "Please select a tag!" }]}
+          >
+            <Select className="select-input--2">
+              <Select.Option value="salary">Salary</Select.Option>
+              <Select.Option value="freelance">Freelance</Select.Option>
+              <Select.Option value="investment">Investment</Select.Option>
+            </Select>
+          </Form.Item>
+
         <Form.Item>
           <Button htmlType="submit" className="btn reset-balance-btn">
             Add Expense

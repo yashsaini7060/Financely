@@ -5,6 +5,7 @@ import {
   Form,
   Input,
   DatePicker,
+  Select
 } from "antd";
 
 const AddIncome = ({ isIncomeModalVisible, handleIncomeCancel, onFinish }) => {
@@ -59,6 +60,19 @@ const AddIncome = ({ isIncomeModalVisible, handleIncomeCancel, onFinish }) => {
           >
             <DatePicker className="custome-input" format="DD-MM-YYYY" />
           </Form.Item>
+          <Form.Item
+            style={{ fontWeight: 600 }}
+            label="Tag"
+            name="tag"
+            rules={[{ required: true, message: "Please select a tag!" }]}
+          >
+            <Select className="select-input--2">
+              <Select.Option value="salary">Salary</Select.Option>
+              <Select.Option value="freelance">Freelance</Select.Option>
+              <Select.Option value="investment">Investment</Select.Option>
+            </Select>
+          </Form.Item>
+
           <Form.Item>
             <Button
               htmlType="submit"

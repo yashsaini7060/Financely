@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./styles.css";
 import Input from "../input";
 import Button from "../Button";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword,  signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword,  signInWithPopup } from "firebase/auth";
 import { db, auth, provider } from "../../firebase";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
