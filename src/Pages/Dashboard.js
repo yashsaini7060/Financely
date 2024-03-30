@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+
 import Header from '../components/Header'
 import Cards from '../components/Cards'
 
@@ -66,7 +67,21 @@ function Dashboard() {
     }
   }
 
-  
+  const calculateBalance = useCallback(() => {
+    let incomeTotal = 0;
+    let expenseTotal = 0;
+    transactions.forEach((transaction) => {
+      if (transaction.type === "income") {
+        incomeTotal += transaction.amount;
+      } else {
+        expenseTotal += transaction.amount;
+      }
+    });
+
+    setIncome(incomeTotal);
+    setExpense(expenseTotal);
+    setTotalBalance(incomeTotal - expenseTotal);
+  }, [transactions]);
   
 
 
@@ -91,23 +106,9 @@ function Dashboard() {
   }, [user])
 
   useEffect(() => {
-    function calculateBalance(){
-      let incomeTotal =0;
-      let expenseTotal = 0;
-      transactions.forEach((transaction) =>{
-        if(transaction.type ==="income"){
-          incomeTotal+=transaction.amount
-        } else{
-          expenseTotal += transaction.amount;
-        }
-      });
-  
-      setIncome(incomeTotal);
-      setExpense(expenseTotal);
-      setTotalBalance(incomeTotal-expenseTotal)
-    }
+    
     calculateBalance();
-  },[transactions])
+  },[transactions, calculateBalance])
 
 
 
