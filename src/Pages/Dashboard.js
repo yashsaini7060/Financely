@@ -66,47 +66,49 @@ function Dashboard() {
     }
   }
 
-  // ...
+  
+  
+
+
   useEffect(() => {
+    async function fetchTransactions() {
+      setLoading(true);
+      if (user) {
+        const q = query(collection(db, `users/${user.uid}/transactions`));
+        const querySnapshot = await getDocs(q);
+        let transactionArray = [];
+        querySnapshot.forEach((doc) => {
+          transactionArray.push(doc.data());
+        })
+        setTransactions(transactionArray);
+        console.log("TransactionsArray",transactionArray)
+        toast.success("Transactions Fetched!")
+      }
+      setLoading(false);
+    }
+
     fetchTransactions();
   }, [user])
 
   useEffect(() => {
+    function calculateBalance(){
+      let incomeTotal =0;
+      let expenseTotal = 0;
+      transactions.forEach((transaction) =>{
+        if(transaction.type ==="income"){
+          incomeTotal+=transaction.amount
+        } else{
+          expenseTotal += transaction.amount;
+        }
+      });
+  
+      setIncome(incomeTotal);
+      setExpense(expenseTotal);
+      setTotalBalance(incomeTotal-expenseTotal)
+    }
     calculateBalance();
   },[transactions])
 
-  function calculateBalance(){
-    let incomeTotal =0;
-    let expenseTotal = 0;
-    transactions.forEach((transaction) =>{
-      if(transaction.type ==="income"){
-        incomeTotal+=transaction.amount
-      } else{
-        expenseTotal += transaction.amount;
-      }
-    });
-
-    setIncome(incomeTotal);
-    setExpense(expenseTotal);
-    setTotalBalance(incomeTotal-expenseTotal)
-  }
-
-
-  async function fetchTransactions() {
-    setLoading(true);
-    if (user) {
-      const q = query(collection(db, `users/${user.uid}/transactions`));
-      const querySnapshot = await getDocs(q);
-      let transactionArray = [];
-      querySnapshot.forEach((doc) => {
-        transactionArray.push(doc.data());
-      })
-      setTransactions(transactionArray);
-      console.log("TransactionsArray",transactionArray)
-      toast.success("Transactions Fetched!")
-    }
-    setLoading(false);
-  }
 
 
   return (
