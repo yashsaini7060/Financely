@@ -66,9 +66,9 @@ const AddExpense = ({
             rules={[{ required: true, message: "Please select a tag!" }]}
           >
             <Select className="select-input--2">
-              <Select.Option value="salary">Salary</Select.Option>
-              <Select.Option value="freelance">Freelance</Select.Option>
-              <Select.Option value="investment">Investment</Select.Option>
+              <Select.Option value="food">food</Select.Option>
+              <Select.Option value="education">education</Select.Option>
+              <Select.Option value="office">Office</Select.Option>
             </Select>
           </Form.Item>
 

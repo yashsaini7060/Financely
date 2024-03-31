@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Input, Select, Table, Radio } from "antd";
-import searchImg from "../../assets/search.png";
-import { unparse } from "papaparse";
-function TransactionTable({ transactions }) {
+import searchImg from "../../assets/search.svg";
+import { unparse, parse } from "papaparse";
+import { toast } from 'react-toastify';
+
+function TransactionTable({ transactions, addTransaction, fetchTransactions }) {
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [sortKey, setSortKey] = useState("");
@@ -47,7 +49,7 @@ function TransactionTable({ transactions }) {
   });
 
   // this function for downloading our csv file or exporting a csv file
-  const exportCSV = () => {
+  const exportFromCSV = () => {
     // Specifying fields and data explicitly
     var csv = unparse({
       fields: ["name", "type", "tag", "date", "amount"],
@@ -62,6 +64,39 @@ function TransactionTable({ transactions }) {
     tempLink.click();
     document.body.removeChild(tempLink);
   };
+
+
+  const importFromCsv = (event) => {
+    event.preventDefault();
+    try {
+      parse(event.target.files[0], {
+        header: true,
+        complete: async function (results) {
+          // now results.data is an array of objects representing your CSV rows
+          for (const transaction of results.data) {
+            // Skip this transaction if the 'amount' is not a valid number
+            if (isNaN(transaction.amount)) {
+              continue;
+            }
+
+            const newTransaction = {
+              ...transaction,
+              // Convert the 'amount' field to a number using parseFloat instead of parseInt
+              amount: parseFloat(transaction.amount),
+            };
+            // Write each transaction to Firebase (addDoc), you can use the addTransaction function here
+            await addTransaction(newTransaction, true);
+          }
+          toast.success("All transactions added");
+          fetchTransactions();
+          event.target.value = null; // Reset the input field
+        },
+      });
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+
 
   return (
     <div 
@@ -126,7 +161,7 @@ function TransactionTable({ transactions }) {
         >
           <button
             className="btn"
-          onClick={exportCSV}
+          onClick={exportFromCSV}
           >
             Export to CSV
           </button>
@@ -139,7 +174,7 @@ function TransactionTable({ transactions }) {
             accept=".csv"
             required
             style={{ display: "none" }}
-          // onChange={importFromCsv}
+          onChange={importFromCsv}
           />
         </div>
       </div>

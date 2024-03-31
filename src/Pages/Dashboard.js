@@ -10,6 +10,8 @@ import { toast } from 'react-toastify';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '../firebase'
 import TransactionTable from '../components/TransactionsTable';
+import Charts from '../components/Charts';
+import NoTransactions from '../components/NoTransactions';
 
 function Dashboard() {
 
@@ -84,31 +86,63 @@ function Dashboard() {
   }, [transactions]);
   
 
+  const fetchTransactions = useCallback(async () => {
+    if (user) {
+      const dataRef = query(collection(db, `users/${user.uid}/transactions`));
+      const querySnapshot = await getDocs(dataRef);
+      let transactionArray = [];
+      querySnapshot.forEach((doc) => {
+        transactionArray.push({ ...doc.data(), id: doc.id });
+      });
+      setTransactions(transactionArray);
+      console.log("Transaction Array",transactionArray)
+      toast.success("Transaction Fetched!");
+    }
+  }, [user]);
 
   useEffect(() => {
-    async function fetchTransactions() {
-      setLoading(true);
-      if (user) {
-        const q = query(collection(db, `users/${user.uid}/transactions`));
-        const querySnapshot = await getDocs(q);
-        let transactionArray = [];
-        querySnapshot.forEach((doc) => {
-          transactionArray.push(doc.data());
-        })
-        setTransactions(transactionArray);
-        console.log("TransactionsArray",transactionArray)
-        toast.success("Transactions Fetched!")
-      }
-      setLoading(false);
-    }
-
     fetchTransactions();
-  }, [user])
+  }, [user, fetchTransactions]);
 
   useEffect(() => {
     
     calculateBalance();
   },[transactions, calculateBalance])
+
+  let sortedTransactions = transactions.sort((a, b) => {
+      return new Date(a.date) - new Date(b.date);
+  });
+  console.log(sortedTransactions)
+
+//   function sortByDate(array) {
+//     // Convert date strings to standard format (YYYY-MM-DD)
+//     array.forEach(item => {
+//         let parts = item.date.split("-");
+//         if (parts.length === 3) {
+//             item.date = `${parts[2]}-${parts[1]}-${parts[0]}`;
+//         }
+//     });
+
+//     // Sort the array based on the date
+//     array.sort((a, b) => {
+//         return new Date(a.date) - new Date(b.date);
+//     });
+
+//     // Convert date back to original format if needed
+//     array.forEach(item => {
+//         let parts = item.date.split("-");
+//         if (parts.length === 3) {
+//             item.date = `${parts[2]}-${parts[1]}-${parts[0]}`;
+//         }
+//     });
+
+//     return array;
+// }
+
+// // Usage example
+// const sortedTransactions = sortByDate(transactions);
+
+
 
 
 
@@ -126,6 +160,9 @@ function Dashboard() {
             showIncomeModal={showIncomeModal}
             showExpenseModal={showExpenseModal}
           />
+          {transactions.length !== 0 ? <Charts sortedTransactions={sortedTransactions}/> : <NoTransactions/>}
+
+
           <AddExpense
             isExpenseModalVisible={isExpenseModalVisible}
             handleExpenseCancel={handleExpenseCancel}
@@ -135,7 +172,7 @@ function Dashboard() {
             handleIncomeCancel={handleIncomeCancel}
             onFinish={onFinish}
           />
-          <TransactionTable transactions={transactions}/>
+          <TransactionTable transactions={transactions} addTransaction={addTransaction} fetchTransactions={fetchTransactions}/>
         </>
       )}
     </div>

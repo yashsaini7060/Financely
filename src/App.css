@@ -1,4 +1,4 @@
-.wrapper{
+.wrapper, .chart-wrapper{
   display: flex;
   justify-content: center;
   align-items: center;
@@ -8,4 +8,14 @@
 
 .p-login{
   text-align: center;
+}
+
+.chart-wrapper{
+  width: 93%;
+  justify-content: space-between;
+  height: auto;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow);
+  margin: 2rem;
 }
